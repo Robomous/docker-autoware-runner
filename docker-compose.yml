@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  foxglove_bridge:
+    build:
+      context: ./docker/foxglove_bridge/
+      dockerfile: Dockerfile
+    image: foxglove-bridge:latest
+    container_name: foxglove_bridge
+    command: ros2 launch foxglove_bridge foxglove_bridge_launch.xml port:=8765
+    network_mode: host
+    stdin_open: true
+    tty: true
+
+  autoware:
+    image: ghcr.io/autowarefoundation/autoware:latest-runtime-cuda
+    container_name: autoware
+    command: bash
+    runtime: nvidia
+    privileged: true
+    environment:
+      - DISPLAY=:1
+      - XAUTHORITY=/run/user/1000/gdm/Xauthority
+      - XDG_RUNTIME_DIR=/run/user/1000
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - /tmp/.X11-unix/:/tmp/.X11-unix
+      - /etc/localtime:/etc/localtime:ro
+      - ${LOCAL_AUTOWARE_DATA}:/autoware_data:ro
+      - ${LOCAL_AUTOWARE_MAPS}p:/autoware_map:ro
+    network_mode: host
+    stdin_open: true
+    tty: true
+    depends_on:
+      foxglove_bridge:
+        condition: service_started
+  

@@ -1,0 +1,3 @@
+LOCAL_AUTOWARE_DATA=/local/data/path
+LOCAL_AUTOWARE_MAPS=/local/maps/path
+LOCAL_AUTOWARE_WORKSPACE=/local/workspace/path
